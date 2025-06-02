@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/thecats1105/discord-rpc-selfbot/refs/heads/main/config.schema.json",
+  "$schema": "https://raw.githubusercontent.com/intensifies/discord-rpc-selfbot/refs/heads/main/config.schema.json",
   "APPLICATION_ID": "<APPLICATION_ID>",
   "type": "<ACTIVITY_TYPE>",
   "name": "<ACTIVITY_NAME>",
