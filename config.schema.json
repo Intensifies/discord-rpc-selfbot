@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/thecats1105/discord-rpc-selfbot/refs/heads/main/config.schema.json",
+  "$id": "https://raw.githubusercontent.com/intensifies/discord-rpc-selfbot/refs/heads/main/config.schema.json",
   "title": "Discord RPC Selfbot",
   "description": "A selfbot for Discord that allows you to set a custom rich presence status.",
   "type": "object",
