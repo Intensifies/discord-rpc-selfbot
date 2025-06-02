@@ -5,32 +5,17 @@
   "name": "Spotify",
   "details": "Life of a Developer",
   "state": "Tense",
-  "streamURL": "",
-  "party": {
-    "size": {
-      "current": null,
-      "max": null
-    }
   },
   "setLocalTime": true,
   "timezone": "Asia",
-  "startTimeStamp": null,
-  "endTimeStamp": null,
   "assets": {
     "large_image": "spotify:ab67706c0000bebb8d0ce13d55f634e290f744ba",
-    "large_text": "Developing Life",
-    "small_image": "",
-    "small_text": ""
+    "large_text": "Developing Life"
   },
   "buttons": [
     {
       "label": "My Bio!",
       "url": "https://guns.lol/tense"
-    },
-    {
-      "label": "",
-      "url": ""
     }
-  ],
-  "refreshInterval": null
+  ]
 }
