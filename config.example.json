@@ -1,35 +1,35 @@
 {
   "$schema": "https://raw.githubusercontent.com/thecats1105/discord-rpc-selfbot/refs/heads/main/config.schema.json",
-  "APPLICATION_ID": "<APPLICATION_ID>",
-  "type": "<ACTIVITY_TYPE>",
-  "name": "<ACTIVITY_NAME>",
-  "details": "<ACTIVITY_DETAILS>",
-  "state": "<ACTIVITY_STATE>",
-  "streamURL": "<STREAM_URL>",
+  "APPLICATION_ID": "1103326187348050024",
+  "type": "LISTENING",
+  "name": "Spotify",
+  "details": "Life of a Developer",
+  "state": "Tense",
+  "streamURL": "",
   "party": {
     "size": {
       "current": null,
       "max": null
     }
   },
-  "setLocalTime": null,
-  "timezone": "<TIMEZONE>",
+  "setLocalTime": true,
+  "timezone": "Asia",
   "startTimeStamp": null,
   "endTimeStamp": null,
   "assets": {
-    "large_image": "<LARGE_IMAGE>",
-    "large_text": "<LARGE_TEXT>",
-    "small_image": "<SMALL_IMAGE>",
-    "small_text": "<SMALL_TEXT>"
+    "large_image": "spotify:ab67706c0000bebb8d0ce13d55f634e290f744ba",
+    "large_text": "Developing Life",
+    "small_image": "",
+    "small_text": ""
   },
   "buttons": [
     {
-      "label": "<BUTTON_LABEL>",
-      "url": "<BUTTON_URL>"
+      "label": "My Bio!",
+      "url": "https://guns.lol/tense"
     },
     {
-      "label": "<BUTTON_LABEL>",
-      "url": "<BUTTON_URL>"
+      "label": "",
+      "url": "<"
     }
   ],
   "refreshInterval": null
