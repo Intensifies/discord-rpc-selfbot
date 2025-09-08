@@ -5,41 +5,12 @@ import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc.js'
 import timezone from 'dayjs/plugin/timezone.js'
 import { healthCheck, selfPing } from './koyebCompact.js'
+import type { Config } from './types/config'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
 const { CONFIG_URL, TOKEN, KOYEB_PUBLIC_DOMAIN } = process.env
-
-interface Config {
-  APPLICATION_ID: string
-  type?: 'PLAYING' | 'STREAMING' | 'LISTENING' | 'WATCHING' | 'COMPETING'
-  name?: string
-  details?: string
-  state?: string
-  streamURL?: string
-  party?: {
-    size: {
-      current: number
-      max: number
-    }
-  }
-  setLocalTime?: boolean
-  timezone?: string
-  startTimestamp?: number
-  endTimestamp?: number
-  assets?: {
-    large_image?: string
-    large_text?: string
-    small_image?: string
-    small_text?: string
-  }
-  buttons?: {
-    label: string
-    url: string
-  }[]
-  refreshInterval?: number
-}
 
 let config: Config
 
@@ -56,17 +27,6 @@ if (!CONFIG_URL) {
     console.error('Error loading config:', error)
     throw new Error('Failed to load config')
   }
-}
-
-/**
- * Get the start of the day in the specified timezone
- * @param {string} timezone The timezone to get the start of the day for
- * @return {number} The start of the day in milliseconds since the Unix epoch
- */
-function getStartOfDayInTimezone(timezone: string): number {
-  const now = dayjs().tz(timezone)
-  const AM = now.startOf('day')
-  return AM.valueOf()
 }
 
 const client = new Client({
@@ -142,40 +102,10 @@ client.on('ready', () => {
   console.log(`Logged in as ${client.user?.username}`)
 })
 
+const RPC = new RichPresence(client).setApplicationId(config.APPLICATION_ID)
+
 setInterval(() => {
-  const RPC = new RichPresence(client).setApplicationId(config.APPLICATION_ID)
-
-  // Set the rich presence properties
-  if (config.type) RPC.setType(config.type)
-  if (config.type === 'STREAMING' && config.streamURL)
-    RPC.setURL(config.streamURL)
-  if (config.name) RPC.setName(config.name)
-  if (config.details) RPC.setDetails(config.details)
-  if (config.state) RPC.setState(config.state)
-  if (config.party)
-    RPC.setParty({
-      max: config.party.size.max,
-      current: config.party.size.current
-    })
-  if (config.setLocalTime && config.timezone)
-    RPC.setStartTimestamp(getStartOfDayInTimezone(config.timezone))
-  if (config.startTimestamp) RPC.setStartTimestamp(config.startTimestamp)
-  if (config.endTimestamp) RPC.setEndTimestamp(config.endTimestamp)
-  if (config.assets) {
-    if (config.assets.large_image)
-      RPC.setAssetsLargeImage(config.assets.large_image)
-    if (config.assets.large_text)
-      RPC.setAssetsLargeText(config.assets.large_text)
-    if (config.assets.small_image)
-      RPC.setAssetsSmallImage(config.assets.small_image)
-    if (config.assets.small_text)
-      RPC.setAssetsSmallText(config.assets.small_text)
-  }
-  if (config.buttons)
-    config.buttons.forEach(button => {
-      RPC.addButton(button.label, button.url)
-    })
-
+  updateRPC(RPC, config)
   // Update the rich presence
   client.user?.setActivity(RPC)
 
@@ -184,12 +114,82 @@ setInterval(() => {
 }, config.refreshInterval || 15000)
 
 try {
-  if (KOYEB_PUBLIC_DOMAIN) healthCheck.listen(8000)
-  console.log(
-    `Health check server for Koyeb running at https://${KOYEB_PUBLIC_DOMAIN}`
-  )
+  if (KOYEB_PUBLIC_DOMAIN) {
+    healthCheck.listen(8000)
+    console.log(
+      `Health check server for Koyeb running at https://${KOYEB_PUBLIC_DOMAIN}`
+    )
+  }
   await client.login(TOKEN)
 } catch (error) {
   console.error('Error logging in:', error)
   throw new Error('Failed to log in')
+}
+
+/**
+ * Get the start of the day in the specified timezone
+ * @param {string} timezone The timezone to get the start of the day for
+ * @return {number} The start of the day in milliseconds since the Unix epoch
+ */
+function getStartOfDayInTimezone(timezone: string): number {
+  const now = dayjs().tz(timezone)
+  const AM = now.startOf('day')
+  return AM.valueOf()
+}
+
+/**
+ * Updates the Rich Presence object based on the provided configuration.
+ * @param rpc The Rich Presence object to update.
+ * @param config The configuration to apply.
+ */
+function updateRPC(rpc: RichPresence, config: Config) {
+  if (config.name) rpc.setName(config.name)
+  if (config.details) rpc.setDetails(config.details)
+  if (config.state) rpc.setState(config.state)
+  if (config.party) {
+    rpc.setParty({
+      max: config.party.size.max,
+      current: config.party.size.current
+    })
+  }
+
+  // Activity Type
+  if (config.type) {
+    rpc.setType(config.type)
+    if (config.type === 'STREAMING' && config.streamURL) {
+      rpc.setURL(config.streamURL)
+    }
+  }
+
+  // Timestamps
+  if (config.setLocalTime && config.timezone) {
+    rpc.setStartTimestamp(getStartOfDayInTimezone(config.timezone))
+  } else if (config.startTimestamp) {
+    rpc.setStartTimestamp(config.startTimestamp)
+  }
+  if (config.endTimestamp) {
+    rpc.setEndTimestamp(config.endTimestamp)
+  }
+
+  // Assets
+  if (config.assets) {
+    if (config.assets.large_image)
+      rpc.setAssetsLargeImage(config.assets.large_image)
+    if (config.assets.large_text)
+      rpc.setAssetsLargeText(config.assets.large_text)
+    if (config.assets.small_image)
+      rpc.setAssetsSmallImage(config.assets.small_image)
+    if (config.assets.small_text)
+      rpc.setAssetsSmallText(config.assets.small_text)
+  }
+
+  // Buttons
+  if (config.buttons) {
+    rpc.setButtons(
+      ...config.buttons.map(button => ({
+        name: button.label,
+        url: button.url
+      }))
+    )
+  }
 }
